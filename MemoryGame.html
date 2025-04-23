@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="css/layoutstyles1.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Memory Match Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    #game-board {
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      grid-gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      width: 100px;
+      height: 100px;
+      background-color: #007BFF;
+      color: white;
+      font-size: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 8px;
+      user-select: none;
+      transition: 0.3s;
+    }
+
+    .card.flipped {
+      background-color: white;
+      color: #333;
+    }
+
+    .card.matched {
+      background-color: #28a745;
+      color: white;
+      pointer-events: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+<span class="float"> <a href="index.html" id="top">Resume</a>
+    |
+        <a href="Scratchtableu.html">scratch</a>
+</span>
+  <h1>🧠 Memory Match Game</h1>
+  <div id="game-board"></div>
+  <button onclick="generateCards()">🔁 Reset Game</button>
+
+  <script>
+    const board = document.getElementById("game-board");
+    let cardValues = [];
+    let flippedCards = [];
+    let matchedPairs = 0;
+
+    function generateCards() {
+      const emojis = ['🍎','🍌','🍇','🍒','🍍','🥝','🍉','🍑'];
+      cardValues = [...emojis, ...emojis];
+      cardValues.sort(() => Math.random() - 0.5);
+      board.innerHTML = '';
+      matchedPairs = 0;
+      flippedCards = [];
+
+      cardValues.forEach((value, index) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.dataset.value = value;
+        card.dataset.index = index;
+        card.textContent = '?';
+        card.onclick = () => flipCard(card);
+        board.appendChild(card);
+      });
+    }
+
+    function flipCard(card) {
+      if (card.classList.contains("flipped") || flippedCards.length === 2) return;
+
+      card.textContent = card.dataset.value;
+      card.classList.add("flipped");
+      flippedCards.push(card);
+
+      if (flippedCards.length === 2) {
+        const [first, second] = flippedCards;
+
+        if (first.dataset.value === second.dataset.value) {
+          first.classList.add("matched");
+          second.classList.add("matched");
+          matchedPairs++;
+          flippedCards = [];
+
+          if (matchedPairs === cardValues.length / 2) {
+            setTimeout(() => alert("🎉 You matched them all!"), 300);
+          }
+        } else {
+          setTimeout(() => {
+            first.textContent = '?';
+            second.textContent = '?';
+            first.classList.remove("flipped");
+            second.classList.remove("flipped");
+            flippedCards = [];
+          }, 1000);
+        }
+      }
+    }
+
+    // Initialize game on page load
+    generateCards();
+  </script>
+</body>
+</html>
